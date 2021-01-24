@@ -7,33 +7,11 @@ import {createStore, combineReducers} from 'redux';
 import { v4 as uuid } from 'uuid';
 
 
-// const state = {
-
-//   blog: [
-//     {
-//       id: 1,
-//       title: 'blog1 title',
-//       description: 'blog1 description',
-//       dateAdded: 0
-//     },
-//     {
-//       id: 2,
-//       title: 'blog2 title',
-//       description: 'blog2 description',
-//       dateAdded: 0
-//     }
-//   ],
-//   auth: {
-//     userid: 1,
-//     username: 'tonystark',
-//     email: 'tonystark@gmail.com'
-//   }
-// }
-
-// ACTION CREATOR
 
 
 
+
+// ACTION CREATOR - addblog
 const addBlog = ({ title='',description='',dateAdded=0 }) => ({
   type: 'ADD_BLOG',
   blog: {
@@ -42,6 +20,20 @@ const addBlog = ({ title='',description='',dateAdded=0 }) => ({
     description: description,
     dateAdded: dateAdded
   }
+});
+
+// ACTION CREATOR - removeblog
+const removeBlog = ({ id }) => ({
+  type: 'REMOVE_BLOG',
+  id: id
+});
+
+// ACTION CREATOR - editblog
+//id & updates obje olarak alınmıyor.
+const editBlog = ( id, updates) => ({
+  type: 'EDIT_BLOG',
+  id,
+  updates
 });
 
 
@@ -54,6 +46,21 @@ const blogReducer = (state = blogState, action) => {
         ...state,
         action.blog
       ]
+    case 'REMOVE_BLOG':
+      return state.filter(({id}) => {
+        return id !== action.id;
+      })
+    case 'EDIT_BLOG':
+      return state.map((blog) => {
+        if (blog.id === action.id) {
+          return {
+            ...blog,
+            ...action.updates
+          }
+        } else {
+          return blog;
+        }
+      }) 
 
     default:
       return state;
@@ -86,9 +93,11 @@ store.subscribe(()=> {
 });
 
 
-store.dispatch(addBlog({title:'BLOGGGG 11',description:'DESCRIPTION 111111111'}))
-store.dispatch(addBlog({title:'BLOGGGG 222211',description:'DESCRIPTION 1111122221111'}))
+const blog1 = store.dispatch(addBlog({title:'BLOGGGG 11',description:'DESCRIPTION 111111111'}))
+const blog2 = store.dispatch(addBlog({title:'BLOGGGG 222211',description:'DESCRIPTION 1111122221111'}))
 
+store.dispatch(removeBlog({id: blog1.blog.id}));
+store.dispatch(editBlog(blog2.blog.id , {title:'333333', description:'DESCRIPTION NEW'}));
 
 
 
