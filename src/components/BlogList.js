@@ -6,7 +6,6 @@ import BlogListItem from './BlogListItem';
 
 
 const BlogList = (props) => {
-    console.log(props);
     return (
         <ul>
             {

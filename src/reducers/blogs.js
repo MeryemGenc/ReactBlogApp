@@ -26,6 +26,12 @@ const blogReducer = (state = blogState, action) => {
         }
       }) 
 
+    case 'SET_BLOGS':
+      return action.blogs;
+
+    case 'CLEAR_BLOGS':
+      return [];
+
     default:
       return state;
   }

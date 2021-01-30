@@ -2,38 +2,56 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import './App.css';
-import AppRouter from './routers/AppRouter';
+import AppRouter, {history} from './routers/AppRouter';
 import reportWebVitals from './reportWebVitals';
 import configureStore from './store/configureStore';
-import { addBlog, removeBlog, editBlog} from './actions/blogs';
+import { getBlogsFromDatabase, clearBlogs } from './actions/blogs';
+import {firebase} from './firebase/firebaseConfig';
+import { loginAction, logoutAction} from './actions/auth';
 
 
 
 
 const store = configureStore();
-
-
-store.subscribe(()=> {
-  console.log(store.getState());
-});
-
-
-const blog1 = store.dispatch(addBlog({title:'BLOGGGG 11',description:'DESCRIPTION 111111111'}))
-const blog2 = store.dispatch(addBlog({title:'BLOGGGG 222211',description:'DESCRIPTION 1111122221111'}))
-store.dispatch(addBlog({title:'BLOGGGG 555555511',description:'DESCRIPTION 11555551111'}))
-
-store.dispatch(removeBlog({id: blog1.blog.id}));
-store.dispatch(editBlog(blog2.blog.id , {title:'333333', description:'DESCRIPTION NEW'}));
-
-
-
-ReactDOM.render(
-  <Provider store={store}>
+const result = ( 
+  <Provider store={store}> 
     <AppRouter />
-  </Provider>,
+  </Provider>
+)
 
-  document.getElementById('root')
-);
+
+
+
+ReactDOM.render(<p>Loading...</p> ,document.getElementById('root'));
+
+let isRendered = false;
+const renderApp = () => {
+  if (!isRendered) {
+    ReactDOM.render(result ,document.getElementById('root'));
+    isRendered = true;
+  }
+}
+
+
+
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    //console.log("login yapıldı.");
+    store.dispatch(loginAction(user.uid));
+    store.dispatch(getBlogsFromDatabase()).then(() => {
+      renderApp();
+      if (history.location.pathname === '/') {
+        history.push('/blogs');
+      }
+    });
+  }else {
+    //console.log("çıkış yapıldı.");
+    store.dispatch(logoutAction());
+    store.dispatch(clearBlogs())
+    renderApp();
+    history.push('/');
+  }
+})
 
 
 

@@ -1,31 +1,32 @@
 import React from 'react'
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
-import Header from '../components/Header'
-import Contact from '../components/Contact'
+import { Router, Route, Switch } from 'react-router-dom'
 import NotFoundPage from '../components/NotFoundPage'
 import BlogDetailsPage from '../components/BlogDetailsPage'
-import HomePage from '../components/HomePage'
 import BlogListPage from '../components/BlogListPage'
 import AddBlogPage from '../components/AddBlogPage'
 import EditBlogPage from '../components/EditBlogPage'
+import LoginPage from '../components/LoginPage'
+import createHistory from 'history/createBrowserHistory'
+import PrivateRoute from './PrivateRoute'
+import PublicRoute from './PublicRoute'
+
+export const history = createHistory();
 
 const AppRouter = () => {
     return (
         <div>
-            <BrowserRouter>
+            <Router history={history}>
                 <div>
-                    <Header></Header>
                     <Switch>
-                        <Route exact path="/" component={HomePage} />
-                        <Route exact path="/blogs" component={BlogListPage} />
-                        <Route path="/create" component={AddBlogPage} />
-                        <Route path="/edit/:id" component={EditBlogPage} />
-                        <Route path="/blogs/:id" component={BlogDetailsPage} />
-                        <Route path="/contact" component={Contact} />
+                        <PublicRoute exact path="/" component={LoginPage} />
+                        <PrivateRoute exact path="/blogs" component={BlogListPage} />
+                        <PrivateRoute path="/create" component={AddBlogPage} />
+                        <PrivateRoute path="/edit/:id" component={EditBlogPage} />
+                        <PrivateRoute path="/blogs/:id" component={BlogDetailsPage} />
                         <Route component={NotFoundPage} />
                     </Switch>
                 </div>
-            </BrowserRouter>
+            </Router>
         </div>
     )
 }
